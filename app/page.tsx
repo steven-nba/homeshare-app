@@ -1,12 +1,20 @@
 import HomeCard from "@/components/HomeCard";
-import { mockHomes } from "@/lib/mock-data";
+import { createClient } from "@/lib/supabase/server";
+import { mapHomeRow } from "@/lib/supabase/mappers";
 
-// TODO: replace mockHomes with a Supabase query, e.g.
-//   const supabase = createClient();
-//   const { data: homes } = await supabase.from("homes").select("*").eq("status", "published");
+export default async function DirectoryPage() {
+  const supabase = createClient();
+  const { data, error } = await supabase
+    .from("homes")
+    .select("*")
+    .eq("status", "published")
+    .order("created_at", { ascending: false });
 
-export default function DirectoryPage() {
-  const homes = mockHomes;
+  if (error) {
+    console.error("Failed to load homes:", error.message);
+  }
+
+  const homes = (data ?? []).map(mapHomeRow);
 
   return (
     <div>

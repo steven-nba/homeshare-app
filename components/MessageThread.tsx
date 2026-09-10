@@ -6,15 +6,18 @@ import type { Message } from "@/lib/types";
 export default function MessageThread({
   messages,
   currentUserId,
+  onSend,
 }: {
   messages: Message[];
   currentUserId: string;
+  onSend?: (content: string) => void | Promise<void>;
 }) {
   const [draft, setDraft] = useState("");
 
-  function handleSend(e: React.FormEvent<HTMLFormElement>) {
+  async function handleSend(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    // TODO: insert into `messages` via Supabase.
+    if (!draft.trim() || !onSend) return;
+    await onSend(draft.trim());
     setDraft("");
   }
 

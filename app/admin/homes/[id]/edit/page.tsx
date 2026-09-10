@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
-import { mockHomes } from "@/lib/mock-data";
+import { createClient } from "@/lib/supabase/server";
+import { mapHomeRow } from "@/lib/supabase/mappers";
 
 // TODO: full listing editor — text fields for description/amenities/rules/
 // care callout, plus a 10-photo uploader writing to Supabase Storage.
@@ -7,13 +8,20 @@ import { mockHomes } from "@/lib/mock-data";
 // navigable end-to-end for the Sept 10 demo, even before the real
 // upload UI is built.
 
-export default function EditHomePage({
+export default async function EditHomePage({
   params,
 }: {
   params: { id: string };
 }) {
-  const home = mockHomes.find((h) => h.id === params.id);
-  if (!home) notFound();
+  const supabase = createClient();
+  const { data: homeRow } = await supabase
+    .from("homes")
+    .select("*")
+    .eq("id", params.id)
+    .maybeSingle();
+
+  if (!homeRow) notFound();
+  const home = mapHomeRow(homeRow);
 
   return (
     <div className="mx-auto max-w-2xl">

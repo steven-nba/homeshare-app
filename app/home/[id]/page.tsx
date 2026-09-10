@@ -1,18 +1,30 @@
 import { notFound } from "next/navigation";
-import { mockHomes, mockMembers } from "@/lib/mock-data";
+import { createClient } from "@/lib/supabase/server";
+import { mapHomeRow, mapMemberRow } from "@/lib/supabase/mappers";
 import BookingRequestForm from "@/components/BookingRequestForm";
 
-// TODO: replace with a Supabase query by id, joined with the owner's member record.
-
-export default function HomeDetailPage({
+export default async function HomeDetailPage({
   params,
 }: {
   params: { id: string };
 }) {
-  const home = mockHomes.find((h) => h.id === params.id);
-  if (!home) notFound();
+  const supabase = createClient();
+  const { data: homeRow } = await supabase
+    .from("homes")
+    .select("*")
+    .eq("id", params.id)
+    .maybeSingle();
 
-  const owner = mockMembers.find((m) => m.id === home.ownerId);
+  if (!homeRow) notFound();
+  const home = mapHomeRow(homeRow);
+
+  const { data: ownerRow } = await supabase
+    .from("members")
+    .select("*")
+    .eq("id", home.ownerId)
+    .maybeSingle();
+
+  const owner = ownerRow ? mapMemberRow(ownerRow) : null;
 
   return (
     <div className="grid grid-cols-1 gap-10 lg:grid-cols-3">

@@ -1,30 +1,50 @@
-import { mockMembers } from "@/lib/mock-data";
-import MessageThread from "@/components/MessageThread";
+import { createClient } from "@/lib/supabase/server";
+import { mapMemberRow, mapMessageRow } from "@/lib/supabase/mappers";
+import MessagesClient from "./messages-client";
 
-// TODO: replace with the signed-in member's conversations, grouped by
-// counterpart, fetched from Supabase and filtered by RLS automatically.
+export default async function MessagesPage() {
+  const supabase = createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
-export default function MessagesPage() {
-  const conversations = mockMembers;
+  if (!user) {
+    return (
+      <div className="rounded-2xl border border-border bg-white p-8 text-center font-body text-sm text-ink-muted">
+        Sign in to see your messages.
+      </div>
+    );
+  }
+
+  const { data: messageRows, error } = await supabase
+    .from("messages")
+    .select("*")
+    .or(`sender_id.eq.${user.id},recipient_id.eq.${user.id}`)
+    .order("created_at", { ascending: true });
+
+  if (error) {
+    console.error("Failed to load messages:", error.message);
+  }
+
+  const messages = (messageRows ?? []).map(mapMessageRow);
+
+  const partnerIds = Array.from(
+    new Set(
+      messages.map((m) => (m.senderId === user.id ? m.recipientId : m.senderId))
+    )
+  );
+
+  const { data: memberRows } = partnerIds.length
+    ? await supabase.from("members").select("*").in("id", partnerIds)
+    : { data: [] as any[] };
+
+  const conversations = (memberRows ?? []).map(mapMemberRow);
 
   return (
-    <div className="grid grid-cols-1 gap-6 rounded-2xl border border-border bg-white md:grid-cols-3">
-      <div className="border-border md:col-span-1 md:border-r">
-        <h1 className="p-4 font-display text-xl text-ink">Messages</h1>
-        <ul>
-          {conversations.map((m) => (
-            <li
-              key={m.id}
-              className="cursor-pointer border-t border-border px-4 py-3 font-body text-sm text-ink hover:bg-stone-50"
-            >
-              {m.name}
-            </li>
-          ))}
-        </ul>
-      </div>
-      <div className="h-[500px] md:col-span-2">
-        <MessageThread messages={[]} currentUserId="me" />
-      </div>
-    </div>
+    <MessagesClient
+      conversations={conversations}
+      messages={messages}
+      currentUserId={user.id}
+    />
   );
 }

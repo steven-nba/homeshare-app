@@ -1,15 +1,45 @@
 "use client";
 
 import { useState } from "react";
+import { createClient } from "@/lib/supabase/client";
 
 // Rev0 booking request: rough dates + a note, sent to the owner for
 // approval. No live calendar yet — that's Stage 2 (see project plan).
 export default function BookingRequestForm({ homeId }: { homeId: string }) {
   const [submitted, setSubmitted] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    // TODO: insert into `booking_requests` via Supabase, status "pending".
+    setError(null);
+
+    const form = new FormData(e.currentTarget);
+    const supabase = createClient();
+
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (!user) {
+      setError("Sign in to request a stay.");
+      return;
+    }
+
+    const { error: insertError } = await supabase
+      .from("booking_requests")
+      .insert({
+        home_id: homeId,
+        requester_id: user.id,
+        requested_dates: form.get("dates") as string,
+        note: (form.get("note") as string) || null,
+        status: "pending",
+      });
+
+    if (insertError) {
+      setError(insertError.message);
+      return;
+    }
+
     setSubmitted(true);
   }
 
@@ -23,6 +53,11 @@ export default function BookingRequestForm({ homeId }: { homeId: string }) {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
+      {error && (
+        <p className="rounded-lg bg-red-50 px-3 py-2 font-body text-sm text-red-700">
+          {error}
+        </p>
+      )}
       <div>
         <label
           htmlFor="dates"

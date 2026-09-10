@@ -1,10 +1,23 @@
 import Link from "next/link";
-import { mockHomes } from "@/lib/mock-data";
+import { createClient } from "@/lib/supabase/server";
+import { mapHomeRow } from "@/lib/supabase/mappers";
 
 // TODO: gate this route to role "admin" or "superadmin" only (Supabase RLS
 // plus a server-side role check in a layout or middleware).
 
-export default function AdminDashboard() {
+export default async function AdminDashboard() {
+  const supabase = createClient();
+  const { data, error } = await supabase
+    .from("homes")
+    .select("*")
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    console.error("Failed to load homes:", error.message);
+  }
+
+  const homes = (data ?? []).map(mapHomeRow);
+
   return (
     <div>
       <div className="mb-8 flex items-center justify-between">
@@ -30,7 +43,7 @@ export default function AdminDashboard() {
             </tr>
           </thead>
           <tbody>
-            {mockHomes.map((home) => (
+            {homes.map((home) => (
               <tr key={home.id} className="border-t border-border">
                 <td className="px-4 py-3 text-ink">{home.title}</td>
                 <td className="px-4 py-3 text-ink-muted">
