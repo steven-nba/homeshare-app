@@ -30,15 +30,13 @@ deployed to Vercel.
 
 ## What's stubbed vs. real
 
-Everything **renders and is navigable**, but data doesn't persist yet:
-- Forms (booking request, messages, invite setup, login, admin edit) submit
-  without hitting a database — each has a `TODO` marking where the Supabase
-  call goes.
+Directory, admin listing, home detail, admin edit, and messages pages read
+and write real Supabase data now (see "Progress" below). Still stubbed:
 - Photo upload is a placeholder box, not a real uploader.
-- No auth/session check yet — every route is open regardless of role.
-
-This is intentional: the structure, types, and schema are the scaffold;
-wiring each TODO to Supabase is the Week 2 build work.
+- The admin invite-creation flow (generating an invite link) doesn't exist —
+  test accounts are created directly in the Supabase dashboard instead.
+- No auth/session check yet — every route is open regardless of role. This
+  is next.
 
 ## Setup
 
@@ -52,15 +50,31 @@ To get Supabase keys: create a free project at supabase.com, then in the SQL
 editor run `supabase/schema.sql`. Project keys are under
 Project Settings → API.
 
-## Next steps (Week 2)
+## Timeline note
 
-1. Wire each `TODO: replace with Supabase query` to a real call.
+**A working demo is needed by September 15.** This replaces the original
+Week 2–3 plan below — scope for this milestone is deliberately narrowed to
+what's needed for a real, walkable demo by that date. The admin
+invite-creation UI and the real drag-and-drop photo uploader are
+**intentionally deferred until after September 15** — they are not part of
+this milestone.
+
+## Plan (target: Sept 15 demo)
+
+1. ~~Wire each `TODO: replace with Supabase query` to a real call.~~ **Done.**
+   Directory, admin listing, home detail, admin edit, and messages pages
+   read/write real Supabase data; booking-request and message-send actions
+   insert into the database.
 2. Add auth/session handling and route guards (admin routes should redirect
-   non-admins).
-3. Build the real photo uploader against Supabase Storage.
-4. Build the invite-creation flow for admins (generate a link, not just
-   consume one).
-5. Seed `homes` and `members` with the test data for the Sept 10 demo.
+   non-admins). Still needs to be built properly — unchanged from the
+   original plan.
+3. Seed real test accounts and home listings directly through the Supabase
+   dashboard, rather than building the admin invite-creation flow this week.
+4. Add photos to those listings by uploading through Supabase Storage's own
+   dashboard and pasting the resulting URLs into the listing records, rather
+   than building the drag-and-drop uploader this week.
+5. Do a full walkthrough as a real test account, fixing anything that
+   breaks.
 
 ## Open items (not blocking)
 
