@@ -1,64 +1,35 @@
-// TODO: on load, look up the invite by `params.token` in Supabase.
-// If missing/expired, show a friendly "this link is no longer valid" state
-// instead of a generic 404 — the person receiving it is a real member.
+import { createAdminClient } from "@/lib/supabase/admin";
+import InviteForm from "./invite-form";
 
-export default function InvitePage({
+// Looked up with the admin client (service role) because the person
+// opening this link doesn't have an account yet — there's no RLS-visible
+// identity for them until they finish this form.
+export default async function InvitePage({
   params,
 }: {
   params: { token: string };
 }) {
-  return (
-    <div className="mx-auto max-w-md">
-      <h1 className="font-display text-2xl text-ink">
-        Set up your account
-      </h1>
-      <p className="mt-2 font-body text-sm text-ink-muted">
-        You've been invited to join the group. This link is just for you —
-        create your account below.
-      </p>
+  const supabase = createAdminClient();
+  const { data: invite } = await supabase
+    .from("invites")
+    .select("*")
+    .eq("token", params.token)
+    .maybeSingle();
 
-      <form className="mt-6 space-y-4">
-        <div>
-          <label className="block font-body text-sm font-medium text-ink">
-            Your name
-          </label>
-          <input
-            type="text"
-            required
-            className="mt-1 w-full rounded-xl border border-border bg-white px-3 py-2 font-body text-sm text-ink"
-          />
-        </div>
-        <div>
-          <label className="block font-body text-sm font-medium text-ink">
-            Short bio
-          </label>
-          <textarea
-            rows={2}
-            placeholder="A line or two other members will see"
-            className="mt-1 w-full rounded-xl border border-border bg-white px-3 py-2 font-body text-sm text-ink"
-          />
-        </div>
-        <div>
-          <label className="block font-body text-sm font-medium text-ink">
-            Password
-          </label>
-          <input
-            type="password"
-            required
-            className="mt-1 w-full rounded-xl border border-border bg-white px-3 py-2 font-body text-sm text-ink"
-          />
-        </div>
-        <button
-          type="submit"
-          className="w-full rounded-xl bg-olive-700 px-4 py-2 font-body text-sm text-stone-50 hover:bg-olive-600"
-        >
-          Create my account
-        </button>
-      </form>
+  if (!invite || invite.status !== "sent") {
+    return (
+      <div className="mx-auto max-w-md text-center">
+        <h1 className="font-display text-2xl text-ink">
+          This link is no longer valid
+        </h1>
+        <p className="mt-2 font-body text-sm text-ink-muted">
+          {invite?.status === "used"
+            ? "This invite has already been used. If that wasn't you, contact an admin."
+            : "This invite link doesn't exist or has expired. Ask an admin for a new one."}
+        </p>
+      </div>
+    );
+  }
 
-      <p className="mt-4 font-body text-xs text-ink-muted">
-        Invite token: {params.token}
-      </p>
-    </div>
-  );
+  return <InviteForm token={params.token} email={invite.email} />;
 }
