@@ -33,39 +33,41 @@ export default async function AdminDashboard() {
       </div>
 
       <div className="overflow-hidden rounded-2xl border border-border bg-white">
-        <table className="w-full text-left font-body text-sm">
-          <thead className="bg-stone-100 text-ink-muted">
-            <tr>
-              <th className="px-4 py-3">Home</th>
-              <th className="px-4 py-3">Location</th>
-              <th className="px-4 py-3">Status</th>
-              <th className="px-4 py-3"></th>
-            </tr>
-          </thead>
-          <tbody>
-            {homes.map((home) => (
-              <tr key={home.id} className="border-t border-border">
-                <td className="px-4 py-3 text-ink">{home.title}</td>
-                <td className="px-4 py-3 text-ink-muted">
-                  {home.generalLocation}
-                </td>
-                <td className="px-4 py-3">
-                  <span className="rounded-full bg-olive-100 px-2 py-1 text-xs text-olive-700">
-                    {home.status}
-                  </span>
-                </td>
-                <td className="px-4 py-3">
-                  <Link
-                    href={`/admin/homes/${home.id}/edit`}
-                    className="text-olive-700 hover:underline"
-                  >
-                    Edit
-                  </Link>
-                </td>
+        <div className="overflow-x-auto">
+          <table className="w-full min-w-[560px] text-left font-body text-sm">
+            <thead className="bg-stone-100 text-ink-muted">
+              <tr>
+                <th className="px-4 py-3">Home</th>
+                <th className="px-4 py-3">Location</th>
+                <th className="px-4 py-3">Status</th>
+                <th className="px-4 py-3"></th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {homes.map((home) => (
+                <tr key={home.id} className="border-t border-border">
+                  <td className="px-4 py-3 text-ink">{home.title}</td>
+                  <td className="px-4 py-3 text-ink-muted">
+                    {home.generalLocation}
+                  </td>
+                  <td className="px-4 py-3">
+                    <span className="rounded-full bg-olive-100 px-2 py-1 text-xs text-olive-700">
+                      {home.status}
+                    </span>
+                  </td>
+                  <td className="px-4 py-3">
+                    <Link
+                      href={`/admin/homes/${home.id}/edit`}
+                      className="text-olive-700 hover:underline"
+                    >
+                      Edit
+                    </Link>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   );
