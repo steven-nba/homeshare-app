@@ -50,6 +50,9 @@ export default function Nav() {
       <Link href="/messages" className="hover:text-olive-700">
         Messages
       </Link>
+      <Link href="/my-homes" className="hover:text-olive-700">
+        My Homes
+      </Link>
       <Link href="/admin" className="hover:text-olive-700">
         Admin
       </Link>

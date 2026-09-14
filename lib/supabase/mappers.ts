@@ -1,4 +1,4 @@
-import type { Home, Member, Message } from "@/lib/types";
+import type { BookingRequest, Home, Member, Message } from "@/lib/types";
 
 // Supabase rows are snake_case; app types are camelCase. Keep in sync with
 // supabase/schema.sql and lib/types.ts.
@@ -41,5 +41,17 @@ export function mapMessageRow(row: any): Message {
     content: row.content,
     createdAt: row.created_at,
     readAt: row.read_at,
+  };
+}
+
+export function mapBookingRequestRow(row: any): BookingRequest {
+  return {
+    id: row.id,
+    homeId: row.home_id,
+    requesterId: row.requester_id,
+    requestedDates: row.requested_dates,
+    note: row.note,
+    status: row.status,
+    createdAt: row.created_at,
   };
 }
