@@ -33,8 +33,10 @@ deployed to Vercel.
 Directory, admin listing, home detail, admin edit, and messages pages read
 and write real Supabase data. `/login` and `/invite/[token]` work against
 real Supabase auth, and `/admin` redirects anyone who isn't signed in as an
-admin/superadmin. Still stubbed:
-- Photo upload is a placeholder box, not a real uploader.
+admin/superadmin. The database has real seeded members, homes, and photos
+(see "Plan" below). Still stubbed:
+- Photo upload is a placeholder box, not a real uploader — photos are added
+  by hand through Supabase Storage's dashboard instead (see "Plan").
 - The admin invite-creation flow (generating an invite link) doesn't exist —
   test accounts are created directly in the Supabase dashboard instead.
 
@@ -69,13 +71,18 @@ this milestone.
    redirect non-admins).~~ **Done.** `/login` and `/invite/[token]` are
    wired to real Supabase auth; `middleware.ts` redirects non-admins away
    from `/admin`.
-3. Seed real test accounts and home listings directly through the Supabase
-   dashboard, rather than building the admin invite-creation flow this week.
-4. Add photos to those listings by uploading through Supabase Storage's own
-   dashboard and pasting the resulting URLs into the listing records, rather
-   than building the drag-and-drop uploader this week.
-5. Do a full walkthrough as a real test account, fixing anything that
-   breaks.
+3. ~~Seed real test accounts and home listings directly through the
+   Supabase dashboard.~~ **Done.** 3 members (1 admin, 2 owner) and 3
+   published homes.
+4. ~~Add photos to those listings via Supabase Storage's dashboard.~~
+   **Done.** Public `home-photos` bucket, URLs pasted into each listing.
+5. ~~Do a full walkthrough as a real test account, fixing anything that
+   breaks.~~ **Done.** Sign-in, browsing, booking requests, messaging, and
+   admin gating all verified end-to-end. Fixed one real bug found along the
+   way: the "Message \<owner\>" button on home detail pages wasn't wired to
+   anything — it now links to `/messages?to=<ownerId>`.
+
+**The Sept 15 demo milestone is complete.**
 
 ## Open items (not blocking)
 

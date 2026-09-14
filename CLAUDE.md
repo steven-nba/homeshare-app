@@ -26,12 +26,21 @@ through this list **one item at a time, pausing for review after each**:
 2. ~~Add authentication and route guards so admin pages aren't open to
    everyone.~~ **Done.** `/login` and `/invite/[token]` work against real
    Supabase auth; `middleware.ts` redirects non-admins away from `/admin`.
-3. Seed real test accounts and home listings directly through the Supabase
-   dashboard — not by building the admin invite-creation flow. **Next up.**
-4. Add photos to those listings by uploading through Supabase Storage's own
-   dashboard and pasting the resulting URLs into listing records — not by
-   building a drag-and-drop uploader.
-5. Full walkthrough as a real test account, fixing anything that breaks.
+3. ~~Seed real test accounts and home listings directly through the Supabase
+   dashboard.~~ **Done.** 3 members (1 admin, 2 owner) and 3 published
+   homes, created by hand in the dashboard.
+4. ~~Add photos to those listings via Supabase Storage's own dashboard.~~
+   **Done.** Public `home-photos` bucket; URLs pasted into `photo_urls`.
+5. ~~Full walkthrough as a real test account, fixing anything that
+   breaks.~~ **Done.** Verified sign-in, browsing, booking requests,
+   messaging, and admin access/gating end-to-end with throwaway test
+   accounts (created and fully deleted afterward — never touched the real
+   seeded accounts' credentials). Found and fixed one real bug: the
+   "Message <owner>" button on home detail pages was decorative (no TODO
+   ever flagged it, so it slipped through step 1) — now wired to
+   `/messages?to=<ownerId>`.
+
+**Sept 15 milestone is complete.** All 5 items done.
 
 **Intentionally deferred until after Sept 15** (do not build unless asked):
 the admin invite-creation UI (generating invite links) and the real
@@ -58,3 +67,17 @@ See `README.md` for the fuller breakdown of what's wired vs. stubbed.
   necessary because the person redeeming an invite has no account (and
   therefore no RLS identity) until the route creates one. Server-only,
   never import it into a Client Component.
+- When verifying a flow end-to-end needs a real signed-in session, create a
+  throwaway test account with the admin client, test through it, then
+  delete it (member row + auth user) — never touch the real seeded
+  accounts' credentials, and never leave test data behind.
+- Don't drop ad-hoc `.mjs`/test scripts inside the project directory while
+  `npm run dev` is running — Next's file watcher picks them up and can
+  hot-reload/reset page state mid-test, producing misleading failures. Run
+  them from outside the project (e.g. the scratchpad) with a symlinked
+  `node_modules`, or delete them immediately after use.
+- The Browser pane's raw `type` action doesn't reliably update
+  React-controlled inputs (`value` + `onChange`, as in the message
+  composer) — use `form_input` for those. Plain uncontrolled inputs (read
+  via `FormData` on submit, as in the login/invite forms) work fine with
+  `type`.
