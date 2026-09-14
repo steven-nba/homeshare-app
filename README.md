@@ -13,6 +13,8 @@ deployed to Vercel.
   - `/home/[id]` — individual home page (photos, description, amenities,
     house rules, care callout, message + booking request)
   - `/messages` — in-app messaging
+  - `/my-homes` — for owners: see and approve/deny stay requests on their
+    own homes
   - `/admin` — listing management (create/edit)
   - `/invite/[token]` — invite-based account setup
   - `/login` — sign in (no self-serve sign-up, by design)
@@ -97,6 +99,13 @@ way:
 
 Everything else — photo grids, booking requests, messaging, login, invite
 redemption — already worked correctly on mobile.
+
+## Post-milestone additions
+
+- **`/my-homes`** — owners can now see and approve/deny stay requests on
+  homes they host, not just submit requests as a guest. Uses the RLS
+  policy and `status` column already in `supabase/schema.sql`, so no
+  schema changes were needed.
 
 ## Open items (not blocking)
 

@@ -56,6 +56,17 @@ Everything else (photo grids at various counts, booking requests,
 messaging, login, invite redemption) already worked correctly on mobile
 with no changes needed.
 
+**Post-milestone addition: `/my-homes`.** Owners previously had no way to
+see or act on stay requests for their own homes — only submit requests as
+a requester. Added `app/my-homes/page.tsx` (+ `my-homes-client.tsx`): lists
+the signed-in member's own homes with their booking requests grouped
+underneath, Approve/Deny buttons on pending ones. Uses the
+`booking_requests` RLS policy and `status` column that were already in
+`supabase/schema.sql` — no schema changes needed. Linked from the nav as
+"My Homes" (not under `/admin`, since owners aren't admins). Verified with
+throwaway accounts, including confirming RLS blocks a requester from
+approving their own request.
+
 **Intentionally deferred until after Sept 15** (do not build unless asked):
 the admin invite-creation UI (generating invite links) and the real
 drag-and-drop photo uploader against Supabase Storage.
