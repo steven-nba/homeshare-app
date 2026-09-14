@@ -2,7 +2,11 @@ import { createClient } from "@/lib/supabase/server";
 import { mapMemberRow, mapMessageRow } from "@/lib/supabase/mappers";
 import MessagesClient from "./messages-client";
 
-export default async function MessagesPage() {
+export default async function MessagesPage({
+  searchParams,
+}: {
+  searchParams: { to?: string };
+}) {
   const supabase = createClient();
   const {
     data: { user },
@@ -28,14 +32,18 @@ export default async function MessagesPage() {
 
   const messages = (messageRows ?? []).map(mapMessageRow);
 
-  const partnerIds = Array.from(
-    new Set(
-      messages.map((m) => (m.senderId === user.id ? m.recipientId : m.senderId))
-    )
+  const partnerIds = new Set(
+    messages.map((m) => (m.senderId === user.id ? m.recipientId : m.senderId))
   );
 
-  const { data: memberRows } = partnerIds.length
-    ? await supabase.from("members").select("*").in("id", partnerIds)
+  // A "Message <owner>" link can point here before any messages exist yet —
+  // make sure that person shows up as a conversation even with no history.
+  if (searchParams.to) {
+    partnerIds.add(searchParams.to);
+  }
+
+  const { data: memberRows } = partnerIds.size
+    ? await supabase.from("members").select("*").in("id", Array.from(partnerIds))
     : { data: [] as any[] };
 
   const conversations = (memberRows ?? []).map(mapMemberRow);
@@ -45,6 +53,7 @@ export default async function MessagesPage() {
       conversations={conversations}
       messages={messages}
       currentUserId={user.id}
+      initialSelectedId={searchParams.to ?? null}
     />
   );
 }

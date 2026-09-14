@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { mapHomeRow, mapMemberRow } from "@/lib/supabase/mappers";
 import BookingRequestForm from "@/components/BookingRequestForm";
@@ -95,9 +96,14 @@ export default async function HomeDetailPage({
               {owner.bio}
             </p>
           )}
-          <button className="mt-4 w-full rounded-xl border border-olive-700 px-4 py-2 font-body text-sm text-olive-700 hover:bg-olive-50">
-            Message {owner?.name?.split(" ")[0] ?? "owner"}
-          </button>
+          {owner && (
+            <Link
+              href={`/messages?to=${owner.id}`}
+              className="mt-4 block w-full rounded-xl border border-olive-700 px-4 py-2 text-center font-body text-sm text-olive-700 hover:bg-olive-50"
+            >
+              Message {owner.name.split(" ")[0]}
+            </Link>
+          )}
         </div>
 
         <div className="rounded-2xl border border-border bg-white p-5">

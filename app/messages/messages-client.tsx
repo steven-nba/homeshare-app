@@ -9,13 +9,15 @@ export default function MessagesClient({
   conversations,
   messages,
   currentUserId,
+  initialSelectedId,
 }: {
   conversations: Member[];
   messages: Message[];
   currentUserId: string;
+  initialSelectedId?: string | null;
 }) {
   const [selectedId, setSelectedId] = useState<string | null>(
-    conversations[0]?.id ?? null
+    initialSelectedId ?? conversations[0]?.id ?? null
   );
   const [thread, setThread] = useState<Message[]>(messages);
 
