@@ -23,10 +23,11 @@ through this list **one item at a time, pausing for review after each**:
    real Supabase data via `lib/supabase/client.ts` (browser) and
    `lib/supabase/server.ts` (server components), mapped through
    `lib/supabase/mappers.ts`.
-2. Add authentication and route guards so admin pages aren't open to
-   everyone. **In progress / next up.**
+2. ~~Add authentication and route guards so admin pages aren't open to
+   everyone.~~ **Done.** `/login` and `/invite/[token]` work against real
+   Supabase auth; `middleware.ts` redirects non-admins away from `/admin`.
 3. Seed real test accounts and home listings directly through the Supabase
-   dashboard — not by building the admin invite-creation flow.
+   dashboard — not by building the admin invite-creation flow. **Next up.**
 4. Add photos to those listings by uploading through Supabase Storage's own
    dashboard and pasting the resulting URLs into listing records — not by
    building a drag-and-drop uploader.
@@ -47,3 +48,13 @@ See `README.md` for the fuller breakdown of what's wired vs. stubbed.
 - RLS requires a signed-in user (`auth.uid() is not null`) to read most
   tables, so pages will correctly show empty/blocked states until item 2
   (auth) lands — that's expected, not a bug.
+- This Supabase project needed explicit `grant ... to anon, authenticated`
+  and `grant ... to service_role` statements before those roles could touch
+  any table at all — RLS policies only apply *after* that base grant check
+  passes. If a query fails with "permission denied for table X" (not an RLS
+  empty-result), the grant is probably missing, not the policy.
+- Invite redemption (`/invite/[token]` → `app/api/invite/[token]/route.ts`)
+  uses `lib/supabase/admin.ts`, a service-role client that bypasses RLS —
+  necessary because the person redeeming an invite has no account (and
+  therefore no RLS identity) until the route creates one. Server-only,
+  never import it into a Client Component.

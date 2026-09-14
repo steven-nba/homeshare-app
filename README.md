@@ -31,12 +31,12 @@ deployed to Vercel.
 ## What's stubbed vs. real
 
 Directory, admin listing, home detail, admin edit, and messages pages read
-and write real Supabase data now (see "Progress" below). Still stubbed:
+and write real Supabase data. `/login` and `/invite/[token]` work against
+real Supabase auth, and `/admin` redirects anyone who isn't signed in as an
+admin/superadmin. Still stubbed:
 - Photo upload is a placeholder box, not a real uploader.
 - The admin invite-creation flow (generating an invite link) doesn't exist —
   test accounts are created directly in the Supabase dashboard instead.
-- No auth/session check yet — every route is open regardless of role. This
-  is next.
 
 ## Setup
 
@@ -65,9 +65,10 @@ this milestone.
    Directory, admin listing, home detail, admin edit, and messages pages
    read/write real Supabase data; booking-request and message-send actions
    insert into the database.
-2. Add auth/session handling and route guards (admin routes should redirect
-   non-admins). Still needs to be built properly — unchanged from the
-   original plan.
+2. ~~Add auth/session handling and route guards (admin routes should
+   redirect non-admins).~~ **Done.** `/login` and `/invite/[token]` are
+   wired to real Supabase auth; `middleware.ts` redirects non-admins away
+   from `/admin`.
 3. Seed real test accounts and home listings directly through the Supabase
    dashboard, rather than building the admin invite-creation flow this week.
 4. Add photos to those listings by uploading through Supabase Storage's own
