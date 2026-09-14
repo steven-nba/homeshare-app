@@ -84,6 +84,20 @@ this milestone.
 
 **The Sept 15 demo milestone is complete.**
 
+## Mobile verification
+
+The app will be demoed on a mobile device. Verified end-to-end at a
+375×812 (iPhone-class) viewport and fixed two real bugs found along the
+way:
+- The nav overflowed horizontally on narrow screens — it now collapses
+  into a hamburger menu below the `sm` breakpoint.
+- The admin table's "Edit" links were almost entirely clipped off-screen —
+  the table now scrolls horizontally (`overflow-x-auto`) instead of hiding
+  content.
+
+Everything else — photo grids, booking requests, messaging, login, invite
+redemption — already worked correctly on mobile.
+
 ## Open items (not blocking)
 
 - Real group/app name — currently placeholder "Homeshare" in `app/layout.tsx`

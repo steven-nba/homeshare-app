@@ -42,6 +42,20 @@ through this list **one item at a time, pausing for review after each**:
 
 **Sept 15 milestone is complete.** All 5 items done.
 
+**Post-milestone: this will be demoed on a mobile device.** Verified the
+full app at a 375×812 (iPhone-class) viewport and fixed two real mobile
+bugs found in the process:
+- `Nav.tsx` overflowed horizontally on narrow screens (whole page scrolled
+  sideways, "Sign in" cut off) — now collapses into a hamburger menu below
+  the `sm` breakpoint.
+- The admin table's "Edit" links were clipped ~90% off-screen (no scroll
+  container) — wrapped in `overflow-x-auto` with a `min-width` so it
+  scrolls instead of hiding content.
+
+Everything else (photo grids at various counts, booking requests,
+messaging, login, invite redemption) already worked correctly on mobile
+with no changes needed.
+
 **Intentionally deferred until after Sept 15** (do not build unless asked):
 the admin invite-creation UI (generating invite links) and the real
 drag-and-drop photo uploader against Supabase Storage.
