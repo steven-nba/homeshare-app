@@ -27,9 +27,17 @@ export default async function AdminDashboard() {
             Manage listings and send invites.
           </p>
         </div>
-        <button className="rounded-xl bg-olive-700 px-4 py-2 font-body text-sm text-stone-50 hover:bg-olive-600">
-          + New listing
-        </button>
+        <div className="flex gap-2">
+          <Link
+            href="/admin/invite"
+            className="rounded-xl border border-olive-700 px-4 py-2 font-body text-sm text-olive-700 hover:bg-olive-50"
+          >
+            + Invite member
+          </Link>
+          <button className="rounded-xl bg-olive-700 px-4 py-2 font-body text-sm text-stone-50 hover:bg-olive-600">
+            + New listing
+          </button>
+        </div>
       </div>
 
       <div className="overflow-hidden rounded-2xl border border-border bg-white">
