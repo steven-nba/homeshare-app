@@ -87,8 +87,32 @@ a heavier nav pattern. Gating comes free from the existing
 with a throwaway admin account, and confirmed a signed-in non-admin is
 still redirected away.
 
-**Still intentionally deferred** (do not build unless asked): the real
-drag-and-drop photo uploader against Supabase Storage.
+**Post-milestone addition: real photo uploader.** The placeholder box on
+`app/admin/homes/[id]/edit/page.tsx` is now a working uploader
+(`photo-manager.tsx`): multi-file select (`image/*` only), uploads to the
+existing `home-photos` bucket under a slugified-title folder matching
+what's already there, thumbnails with a remove button that deletes from
+storage (not just the array), a hard block (not a silent partial upload)
+past the 10-photo limit, `photo_urls` saved back the same way the rest of
+the app reads it.
+
+Needed three `storage.objects` RLS policies (admin/superadmin only):
+insert, delete, and — non-obvious — **select**. Supabase's Storage API
+apparently needs the select policy internally to locate objects before a
+delete actually removes them; without it, `remove()` returns success
+with an empty result and silently does nothing. Also needed a base grant
+on `storage.objects` to `authenticated`, the same missing-defaults
+pattern as the public-schema grants below, just in the `storage` schema.
+See `supabase/schema.sql`'s absence of these — they were applied directly
+via the SQL editor, not committed to the schema file (worth adding there
+if this project keeps growing).
+
+Verified end-to-end with a throwaway admin account and listing: upload
+(folder/filenames in storage confirmed to match the DB array), remove
+(confirmed actually gone from storage, not just hidden), the over-limit
+case (blocked entirely, nothing leaked to storage), a non-image file
+(rejected), and a mixed batch (images uploaded, non-image skipped with a
+warning).
 
 See `README.md` for the fuller breakdown of what's wired vs. stubbed.
 
@@ -125,3 +149,17 @@ See `README.md` for the fuller breakdown of what's wired vs. stubbed.
   composer) — use `form_input` for those. Plain uncontrolled inputs (read
   via `FormData` on submit, as in the login/invite forms) work fine with
   `type`.
+- The Browser pane auto-dismisses native `confirm()`/`alert()` dialogs
+  (returns `false`) — to test a flow gated behind one, run
+  `window.confirm = () => true` via the JS tool first (session-only, not
+  a source change).
+- To test file inputs without a native file-picker tool, construct real
+  `File` objects from a data URL and assign them via `DataTransfer` +
+  dispatch a `change` event — `input.files = dt.files; input.dispatchEvent(new Event('change', {bubbles: true}))`.
+- Storage RLS is its own trap: a `.remove()` (or similar) call can return
+  success with an empty/no-op result — no error — if the delete happened
+  but the underlying policy setup doesn't let the row be found afterward.
+  When something "succeeds" but nothing changed, verify with a direct
+  `list()`/`select()` against the real state (ideally via the service-role
+  client, which bypasses RLS) rather than trusting the call's return
+  value alone.

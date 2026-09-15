@@ -34,14 +34,12 @@ deployed to Vercel.
 
 ## What's stubbed vs. real
 
-Directory, admin listing, home detail, admin edit, messages, my-homes, and
-admin invite-creation pages all read/write real Supabase data. `/login`
-and `/invite/[token]` work against real Supabase auth, and `/admin`
-redirects anyone who isn't signed in as an admin/superadmin. The database
-has real seeded members, homes, and photos (see "Plan" below). Still
-stubbed:
-- Photo upload is a placeholder box, not a real uploader — photos are added
-  by hand through Supabase Storage's dashboard instead (see "Plan").
+Directory, admin listing, home detail, admin edit (including a real photo
+uploader), messages, my-homes, and admin invite-creation pages all
+read/write real Supabase data. `/login` and `/invite/[token]` work against
+real Supabase auth, and `/admin` redirects anyone who isn't signed in as
+an admin/superadmin. The database has real seeded members, homes, and
+photos (see "Plan" below).
 
 ## Setup
 
@@ -60,10 +58,9 @@ Project Settings → API.
 **A working demo is needed by September 15.** This replaces the original
 Week 2–3 plan below — scope for this milestone is deliberately narrowed to
 what's needed for a real, walkable demo by that date. The admin
-invite-creation UI and the real drag-and-drop photo uploader were
-**intentionally deferred until after September 15** — the invite-creation
-UI has since been built post-milestone (see "Post-milestone additions"
-below); the photo uploader remains deferred.
+invite-creation UI and the real photo uploader were **intentionally
+deferred until after September 15** — both have since been built
+post-milestone (see "Post-milestone additions" below).
 
 ## Plan (target: Sept 15 demo)
 
@@ -115,8 +112,15 @@ redemption — already worked correctly on mobile.
   `/admin`.
 - **`/admin/members`** — read-only table of every member (Name, Email,
   Role). `components/AdminTabs.tsx` adds a Listings/Members switcher to
-  the top of both admin pages. The real drag-and-drop photo uploader
-  remains deferred.
+  the top of both admin pages.
+- **Real photo uploader** — the placeholder box on the admin edit page
+  now actually uploads to the existing `home-photos` bucket (multi-file,
+  image-only, 10-photo limit enforced with a clear block rather than a
+  silent partial upload), shows thumbnails, and removes photos from
+  storage (not just the listing) when deleted. Needed three new
+  `storage.objects` RLS policies (insert/delete/select, admin-only) and a
+  base grant on `storage.objects` to `authenticated` — applied directly
+  via the SQL editor, not yet committed to `supabase/schema.sql`.
 
 ## Open items (not blocking)
 
