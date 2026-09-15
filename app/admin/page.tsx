@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { mapHomeRow } from "@/lib/supabase/mappers";
+import AdminTabs from "@/components/AdminTabs";
 
 // TODO: gate this route to role "admin" or "superadmin" only (Supabase RLS
 // plus a server-side role check in a layout or middleware).
@@ -39,6 +40,8 @@ export default async function AdminDashboard() {
           </button>
         </div>
       </div>
+
+      <AdminTabs active="listings" />
 
       <div className="overflow-hidden rounded-2xl border border-border bg-white">
         <div className="overflow-x-auto">
