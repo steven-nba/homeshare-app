@@ -128,6 +128,12 @@ upload, thumbnails, remove) already worked correctly.
   `storage.objects` RLS policies (insert/delete/select, admin-only) and a
   base grant on `storage.objects` to `authenticated` — applied directly
   via the SQL editor, not yet committed to `supabase/schema.sql`.
+- **Full edit form** — the edit page's Save button was a no-op stub the
+  whole time (title/description included); it now really saves all six
+  text fields: title, description, general location, amenities
+  (comma-separated input, split into an array), house rules, and an
+  optional care callout (empty clears it to null). Photos still save
+  independently as they upload/remove.
 
 ## Open items (not blocking)
 

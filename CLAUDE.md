@@ -125,6 +125,21 @@ case (blocked entirely, nothing leaked to storage), a non-image file
 (rejected), and a mixed batch (images uploaded, non-image skipped with a
 warning).
 
+**Post-milestone addition: the rest of the edit form.** The "Save
+changes" button was actually a no-op stub the whole time — title and
+description never saved either, not just the missing fields. Split the
+edit page into `edit-form.tsx` (client) which now really saves all six
+text fields together: title, description, `general_location` (plain
+input), `amenities` (single comma-separated input, split/trimmed into an
+array on save), `house_rules` (textarea), and `care_callout` (textarea;
+an empty value saves as `null`, not `""`, matching the nullable schema
+column). Photos stay on their own independent save path via
+`PhotoManager`, untouched. Verified end-to-end with a throwaway admin
+account: all six fields save and reload correctly, amenities handles
+messy input (stray commas/whitespace) correctly, care_callout clears to
+null and the public detail page correctly stops rendering that section
+once it's null.
+
 See `README.md` for the fuller breakdown of what's wired vs. stubbed.
 
 ## Working style
