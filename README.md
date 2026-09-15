@@ -17,6 +17,7 @@ deployed to Vercel.
     own homes
   - `/admin` — listing management (create/edit)
   - `/admin/invite` — generate an invite link for a new member
+  - `/admin/members` — read-only list of everyone in the group
   - `/invite/[token]` — invite-based account setup
   - `/login` — sign in (no self-serve sign-up, by design)
 - `lib/types.ts` — the data model (Member, Home, Message, BookingRequest,
@@ -111,7 +112,11 @@ redemption — already worked correctly on mobile.
   role) from the UI instead of creating test accounts by hand in the
   Supabase dashboard. Uses the token generation and admin-only policy
   already in `supabase/schema.sql`; gated the same way as the rest of
-  `/admin`. The real drag-and-drop photo uploader remains deferred.
+  `/admin`.
+- **`/admin/members`** — read-only table of every member (Name, Email,
+  Role). `components/AdminTabs.tsx` adds a Listings/Members switcher to
+  the top of both admin pages. The real drag-and-drop photo uploader
+  remains deferred.
 
 ## Open items (not blocking)
 

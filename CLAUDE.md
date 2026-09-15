@@ -78,6 +78,15 @@ end-to-end with a throwaway admin account, including redeeming a created
 invite through the real `/invite/[token]` flow and confirming both
 middleware and RLS block non-admins from this route.
 
+**Post-milestone addition: `/admin/members`.** Read-only table (Name,
+Email, Role) of everyone in `members`. Added `components/AdminTabs.tsx` —
+a Listings/Members switcher at the top of both `/admin` and
+`/admin/members` — since a couple of tabs was the whole ask, no need for
+a heavier nav pattern. Gating comes free from the existing
+`/admin/:path*` middleware matcher. Verified against real member data
+with a throwaway admin account, and confirmed a signed-in non-admin is
+still redirected away.
+
 **Still intentionally deferred** (do not build unless asked): the real
 drag-and-drop photo uploader against Supabase Storage.
 
