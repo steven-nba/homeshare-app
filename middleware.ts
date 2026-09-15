@@ -1,9 +1,10 @@
 import { createServerClient, type CookieOptions } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
-// Refreshes the Supabase session on every request and gates /admin to
-// signed-in members with role "admin" or "superadmin". This is UX — the
-// real enforcement is the RLS policies in supabase/schema.sql.
+// Refreshes the Supabase session on every request and gates /admin and
+// /api/admin to signed-in members with role "admin" or "superadmin". This
+// is UX/defense-in-depth — the API routes under /api/admin re-check the
+// caller's role themselves before doing anything privileged.
 export async function middleware(request: NextRequest) {
   let response = NextResponse.next({ request });
 
@@ -33,7 +34,10 @@ export async function middleware(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser();
 
-  if (request.nextUrl.pathname.startsWith("/admin")) {
+  if (
+    request.nextUrl.pathname.startsWith("/admin") ||
+    request.nextUrl.pathname.startsWith("/api/admin")
+  ) {
     if (!user) {
       const redirectUrl = new URL("/login", request.url);
       return NextResponse.redirect(redirectUrl);
@@ -57,5 +61,5 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/admin/:path*"],
+  matcher: ["/admin/:path*", "/api/admin/:path*"],
 };
