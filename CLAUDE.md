@@ -140,6 +140,36 @@ messy input (stray commas/whitespace) correctly, care_callout clears to
 null and the public detail page correctly stops rendering that section
 once it's null.
 
+**Post-milestone addition: member management.** New
+`/admin/members/[id]/edit` (linked from an Edit column on the members
+list): edit a member's name and role. Email is deliberately out of
+scope — changing it would also need to update their Supabase Auth
+login, separate work.
+
+Removal requires an explicit confirm step with a clear Cancel, and is
+blocked entirely if the member owns any homes (deleting a member
+cascades to their homes and the messages/booking requests tied to
+them) — the page names the blocking listings rather than letting
+removal proceed. When allowed, it deletes both the `members` row and
+the Supabase Auth account, not just one, so they can no longer sign in.
+
+Both actions run through `app/api/admin/members/[id]/route.ts`
+(PATCH/DELETE) via the service-role client — there's no RLS policy
+letting an admin write another member's row (only "update your own
+profile" exists), and Auth account deletion is only possible via the
+service-role Admin API regardless. The route re-checks the caller's own
+role server-side; middleware's matcher was extended to cover
+`/api/admin/:path*` too, but the route doesn't rely on that alone.
+
+Verified end-to-end with throwaway accounts: edited then removed a
+member with zero homes (confirmed both the row and auth account gone,
+and that a sign-in attempt afterward is genuinely rejected — not just
+that the UI hides them); confirmed removal is blocked with a clear,
+specific message for a member who owns a test listing, and that nothing
+was mutated by the blocked attempt; confirmed a signed-in non-admin is
+redirected away from the edit page and an unauthenticated DELETE to the
+API route never reaches the handler.
+
 See `README.md` for the fuller breakdown of what's wired vs. stubbed.
 
 ## Working style

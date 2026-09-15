@@ -17,7 +17,8 @@ deployed to Vercel.
     own homes
   - `/admin` — listing management (create/edit)
   - `/admin/invite` — generate an invite link for a new member
-  - `/admin/members` — read-only list of everyone in the group
+  - `/admin/members` — list of everyone in the group
+  - `/admin/members/[id]/edit` — edit a member's name/role, or remove them
   - `/invite/[token]` — invite-based account setup
   - `/login` — sign in (no self-serve sign-up, by design)
 - `lib/types.ts` — the data model (Member, Home, Message, BookingRequest,
@@ -35,11 +36,11 @@ deployed to Vercel.
 ## What's stubbed vs. real
 
 Directory, admin listing, home detail, admin edit (including a real photo
-uploader), messages, my-homes, and admin invite-creation pages all
-read/write real Supabase data. `/login` and `/invite/[token]` work against
-real Supabase auth, and `/admin` redirects anyone who isn't signed in as
-an admin/superadmin. The database has real seeded members, homes, and
-photos (see "Plan" below).
+uploader), messages, my-homes, admin invite-creation, and admin member
+management pages all read/write real Supabase data. `/login` and
+`/invite/[token]` work against real Supabase auth, and `/admin` redirects
+anyone who isn't signed in as an admin/superadmin. The database has real
+seeded members, homes, and photos (see "Plan" below).
 
 ## Setup
 
@@ -134,6 +135,18 @@ upload, thumbnails, remove) already worked correctly.
   (comma-separated input, split into an array), house rules, and an
   optional care callout (empty clears it to null). Photos still save
   independently as they upload/remove.
+- **Member management** — `/admin/members/[id]/edit` lets admins edit a
+  member's name and role (email is out of scope — changing it would also
+  need to update their Supabase Auth login, separate work). Removal
+  requires an explicit confirm step and is blocked entirely if the member
+  owns any homes, since deleting a member cascades to their homes and the
+  messages/booking requests tied to them; the page names the blocking
+  listings. Allowed removals delete both the `members` row and the
+  Supabase Auth account, so the person can no longer sign in. Both
+  actions run through `app/api/admin/members/[id]/route.ts` via the
+  service-role client, since no RLS policy lets an admin write another
+  member's row and Auth deletion needs the service-role Admin API
+  regardless.
 
 ## Open items (not blocking)
 
