@@ -1,12 +1,11 @@
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { mapHomeRow } from "@/lib/supabase/mappers";
+import PhotoManager from "./photo-manager";
 
 // TODO: full listing editor — text fields for description/amenities/rules/
-// care callout, plus a 10-photo uploader writing to Supabase Storage.
-// This stub exists so the admin flow (create → edit → publish) is
-// navigable end-to-end for the Sept 10 demo, even before the real
-// upload UI is built.
+// care callout. The photo uploader is real now (see PhotoManager); the
+// rest of this form still doesn't save.
 
 export default async function EditHomePage({
   params,
@@ -46,14 +45,11 @@ export default async function EditHomePage({
             className="mt-1 w-full rounded-xl border border-border bg-white px-3 py-2 font-body text-sm text-ink"
           />
         </div>
-        <div>
-          <label className="block font-body text-sm font-medium text-ink">
-            Photos (up to 10)
-          </label>
-          <div className="mt-1 rounded-xl border border-dashed border-border p-6 text-center font-body text-sm text-ink-muted">
-            Photo uploader goes here (Supabase Storage)
-          </div>
-        </div>
+        <PhotoManager
+          homeId={home.id}
+          homeTitle={home.title}
+          initialPhotoUrls={home.photoUrls}
+        />
         <button
           type="submit"
           className="rounded-xl bg-olive-700 px-5 py-2 font-body text-sm text-stone-50 hover:bg-olive-600"
