@@ -56,6 +56,17 @@ Everything else (photo grids at various counts, booking requests,
 messaging, login, invite redemption) already worked correctly on mobile
 with no changes needed.
 
+**Mobile Admin re-verification (after invite/members/uploader landed).**
+Re-checked `/admin`, `/admin/members`, `/admin/invite`, and the edit
+page's photo uploader at the same viewport. Found and fixed one more:
+the admin header's "+ Invite member" / "+ New listing" buttons sat next
+to the title in a non-wrapping flex row, so on narrow screens the button
+*text* wrapped mid-word inside squeezed pills. Header now stacks
+vertically below `sm`; the button group wraps together with
+`whitespace-nowrap` on each. Everything else — tabs, scrollable tables,
+the invite form and its link/copy display, multi-file upload, thumbnail
+grid, and remove — already worked correctly at 375px with no changes.
+
 **Post-milestone addition: `/my-homes`.** Owners previously had no way to
 see or act on stay requests for their own homes — only submit requests as
 a requester. Added `app/my-homes/page.tsx` (+ `my-homes-client.tsx`): lists

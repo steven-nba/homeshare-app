@@ -99,6 +99,13 @@ way:
 Everything else — photo grids, booking requests, messaging, login, invite
 redemption — already worked correctly on mobile.
 
+**Re-verified after invite/members/uploader landed:** checked `/admin`,
+`/admin/members`, `/admin/invite`, and the photo uploader at the same
+viewport. Fixed one more bug — the admin header's buttons wrapped
+mid-word on narrow screens instead of the header stacking — everything
+else (tabs, scrollable tables, the invite link/copy display, multi-file
+upload, thumbnails, remove) already worked correctly.
+
 ## Post-milestone additions
 
 - **`/my-homes`** — owners can now see and approve/deny stay requests on
