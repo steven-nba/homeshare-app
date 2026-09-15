@@ -67,8 +67,18 @@ underneath, Approve/Deny buttons on pending ones. Uses the
 throwaway accounts, including confirming RLS blocks a requester from
 approving their own request.
 
-**Intentionally deferred until after Sept 15** (do not build unless asked):
-the admin invite-creation UI (generating invite links) and the real
+**Post-milestone addition: `/admin/invite`.** Admins can now generate an
+invite (email + role) from the UI and get back a shareable link, instead
+of creating test accounts by hand in the Supabase dashboard. No new RLS
+policy needed — `invites` already generates its own token and the
+admin-only policy already covered insert. Gated the same way as the rest
+of `/admin` via the existing middleware matcher. The Copy-link button
+falls back to selecting the text if the Clipboard API is denied. Verified
+end-to-end with a throwaway admin account, including redeeming a created
+invite through the real `/invite/[token]` flow and confirming both
+middleware and RLS block non-admins from this route.
+
+**Still intentionally deferred** (do not build unless asked): the real
 drag-and-drop photo uploader against Supabase Storage.
 
 See `README.md` for the fuller breakdown of what's wired vs. stubbed.

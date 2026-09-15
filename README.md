@@ -16,6 +16,7 @@ deployed to Vercel.
   - `/my-homes` — for owners: see and approve/deny stay requests on their
     own homes
   - `/admin` — listing management (create/edit)
+  - `/admin/invite` — generate an invite link for a new member
   - `/invite/[token]` — invite-based account setup
   - `/login` — sign in (no self-serve sign-up, by design)
 - `lib/types.ts` — the data model (Member, Home, Message, BookingRequest,
@@ -32,15 +33,14 @@ deployed to Vercel.
 
 ## What's stubbed vs. real
 
-Directory, admin listing, home detail, admin edit, and messages pages read
-and write real Supabase data. `/login` and `/invite/[token]` work against
-real Supabase auth, and `/admin` redirects anyone who isn't signed in as an
-admin/superadmin. The database has real seeded members, homes, and photos
-(see "Plan" below). Still stubbed:
+Directory, admin listing, home detail, admin edit, messages, my-homes, and
+admin invite-creation pages all read/write real Supabase data. `/login`
+and `/invite/[token]` work against real Supabase auth, and `/admin`
+redirects anyone who isn't signed in as an admin/superadmin. The database
+has real seeded members, homes, and photos (see "Plan" below). Still
+stubbed:
 - Photo upload is a placeholder box, not a real uploader — photos are added
   by hand through Supabase Storage's dashboard instead (see "Plan").
-- The admin invite-creation flow (generating an invite link) doesn't exist —
-  test accounts are created directly in the Supabase dashboard instead.
 
 ## Setup
 
@@ -59,9 +59,10 @@ Project Settings → API.
 **A working demo is needed by September 15.** This replaces the original
 Week 2–3 plan below — scope for this milestone is deliberately narrowed to
 what's needed for a real, walkable demo by that date. The admin
-invite-creation UI and the real drag-and-drop photo uploader are
-**intentionally deferred until after September 15** — they are not part of
-this milestone.
+invite-creation UI and the real drag-and-drop photo uploader were
+**intentionally deferred until after September 15** — the invite-creation
+UI has since been built post-milestone (see "Post-milestone additions"
+below); the photo uploader remains deferred.
 
 ## Plan (target: Sept 15 demo)
 
@@ -106,6 +107,11 @@ redemption — already worked correctly on mobile.
   homes they host, not just submit requests as a guest. Uses the RLS
   policy and `status` column already in `supabase/schema.sql`, so no
   schema changes were needed.
+- **`/admin/invite`** — admins can now generate an invite link (email +
+  role) from the UI instead of creating test accounts by hand in the
+  Supabase dashboard. Uses the token generation and admin-only policy
+  already in `supabase/schema.sql`; gated the same way as the rest of
+  `/admin`. The real drag-and-drop photo uploader remains deferred.
 
 ## Open items (not blocking)
 
